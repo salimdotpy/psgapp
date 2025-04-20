@@ -1,0 +1,156 @@
+{% extends 'admin/layout.html' %}
+{% block style %}
+<style>
+    .modal:nth-of-type(even){z-index: 1051!important;}
+    .modal-backdrop.show:nth-of-type(even){z-index: 1052!important;}
+    .a-flex{
+        display: flex; justify-content: space-between; overflow-x: auto;
+    }
+    .a-flex>div, .a-flex>label{
+        flex-basis: 38%; flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#project">Project</a></li>
+            <li><a data-toggle="tab" href="#seminar">Seminar</a></li>
+            <li><a data-toggle="tab" href="#new">Upload New</a></li>
+            <li><a data-toggle="tab" href="#report">Download Report</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="panel z-depth-1 tab-pane fade in active" id="project">
+                <div class="panel-body">
+                    <b>{{pageTitle}}</b>
+                    <hr>
+                    <div class="table-responsive">
+                        <table id="p_history" class="table table-bordered table-hover" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>S/N</th><th>Name</th>
+                                <th>MatricNo</th><th>Writeup</th><th>Defence</th><th>Total</th><th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% if students %}
+                                {% for student in students %}
+                                <tr>
+                                    <td>{{loop.index}}</td>
+                                    <td>{{student.name}}</td>
+                                    <td>{{student.matricno}}</td>
+                                    <td>{{student.pwriteup}}</td>
+                                    <td>{{student.pdefence}}</td>
+                                    <td>{{student.pwriteup|int + student.pdefence|int}}</td>
+                                    <td>{{student.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                </tr>
+                                {%else%}
+                                <tr>
+                                    <td colspan="100%">No record found</td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel z-depth-1 tab-pane fade" id="seminar">
+                <div class="panel-body">
+                    <b>{{pageTitle}}</b>
+                    <hr>
+                    <div class="table-responsive">
+                        <table id="s_history" class="table table-bordered table-hover" style="width:100%">
+                            <thead>
+                            <tr>
+                                <th>S/N</th><th>Name</th>
+                                <th>MatricNo</th><th>Writeup</th><th>Defence</th><th>Total</th><th>Date</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% if students %}
+                                {% for student in students %}
+                                <tr>
+                                    <td>{{loop.index}}</td>
+                                    <td>{{student.name}}</td>
+                                    <td>{{student.matricno}}</td>
+                                    <td>{{student.swriteup}}</td>
+                                    <td>{{student.sdefence}}</td>
+                                    <td>{{student.swriteup|int + student.sdefence|int}}</td>
+                                    <td>{{student.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                </tr>
+                                {%else%}
+                                <tr>
+                                    <td colspan="100%">No record found</td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="panel z-depth-1 tab-pane fade" id="new">
+                <div class="panel-body">
+                    <form method="post" enctype="multipart/form-data" action="{{url_for('adminStudent')}}">
+                        <div class="alert alert-warning">
+                            <strong>Note:</strong>
+                            This action will truncate the student table, and existing record will be erased
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Upload Student</label>
+                            <input type="file" name="file" class="form-control" required>
+                            <span class="text-info">Upload excel file with (.xlsx or xls) extension</span>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-block" type="submit">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel z-depth-1 tab-pane fade" id="report">
+                <div class="panel-body">
+                    <form method="post" action="{{url_for('adminStudent')}}">
+                        <div class="form-group">
+                            <label class="required">Generate Student Report</label>
+                            <input type='hidden' name='report' value="report">
+                            <select name='type' class="form-control" required>
+                                <option value=''>Select Report</option>
+                                <option value='project'>Project</option>
+                                <option value='seminar'>Seminar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-block" type="submit">Download</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    function checkAll(e) {
+        if(e.target.checked){
+            $('.ckbx').each(function( index ) {
+                $(this).prop('checked', true);
+            });
+        }else {
+            $('.ckbx').each(function( index ) {
+                $(this).prop('checked', false);
+            });
+        }
+    }
+    $(document).ready(function () {
+        $('.app-name').text("{{pageTitle}}");
+        $('.fa-power-off').hide();
+        $('.s_icon').html("<a href='{{url_for('adminDashboard')}}'><i class='fa fa-arrow-left' " +
+            "></i></a>");
+        $('#p_history, #s_history').DataTable();
+        $('#p_history_wrapper, #s_history_wrapper').addClass('table-responsive');
+    })
+</script>
+{% endblock %}

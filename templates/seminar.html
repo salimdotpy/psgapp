@@ -1,0 +1,141 @@
+{% extends 'layout.html' %}
+{% block style %}
+<style>
+    .modal:nth-of-type(even){z-index: 1051!important;}
+    .modal-backdrop.show:nth-of-type(even){z-index: 1052!important;}
+    .a-flex{
+        display: flex; justify-content: space-between; overflow-x: auto;
+    }
+    .a-flex>div, .a-flex>label{
+        flex-basis: 38%; flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel z-depth-1">
+            <div class="panel-body">
+                <b>{{pageTitle}}</b>
+                <hr>
+                <ul class="nav nav-tabs">
+                    {% if widget and widget['wseminars']|count > 0 and  widget['dseminars']|count > 0 %}
+                    <li class="active"><a data-toggle="tab" href="#writeup">Writeup</a></li>
+                    <li><a data-toggle="tab" href="#defence">Defence</a></li>
+                    {% elif widget and widget['wseminars']|count > 0 %}
+                    <li class="active"><a data-toggle="tab" href="#writeup">Writeup</a></li>
+                    {% elif widget and widget['dseminars']|count > 0 %}
+                    <li class="active"><a data-toggle="tab" href="#defence">Defence</a></li>
+                    {% endif %}
+                </ul>
+                <div class="tab-content">
+                    <div class="panel z-depth-1 tab-pane fade
+                    {% if widget and widget['wseminars']|count > 0 and  widget['dseminars']|count > 0 %}
+                    in active
+                    {% elif widget and widget['wseminars']|count > 0 %}
+                    in active
+                    {% endif %} " id="writeup">
+                        <div class="panel-body">
+                            <form method="post">
+                                <input type='hidden' name='mode' value='writeup' />
+                                <div class="table-responsive">
+                                    <table id="sw_history" class="table table-bordered table-hover" style="width:100%">
+                                        <thead>
+                                        <tr>
+                                            <th>S/N</th><th>Name</th><th>Matricno</th><th>Score</th><th>Date</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if widget and widget['wseminars'] %}
+                                            {% for seminar in widget['wseminars'] %}
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" name="data_ids[]" value="{{seminar.student.id}}">
+                                                    {{loop.index}}
+                                                </td>
+                                                <td>{{seminar.student.name}}</td>
+                                                <td>{{seminar.student.matricno}}</td>
+                                                <td>
+                                                    <input type="number" name="data_scores[]" max="60" class="form-control" value="{{seminar.student.pwriteup}}" required>
+                                                </td>
+                                                <td>{{seminar.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                            </tr>
+                                            {%else%}
+                                            <tr>
+                                                <td colspan="100%">No record found</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <br/>
+                                <div class="form-group">
+                                    <button class="btn btn-primary btn-block" type="submit">Submit Scores</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="panel z-depth-1 tab-pane fade
+                    {% if widget and widget['wseminars']|count == 0 and  widget['dseminars']|count > 0 %}
+                    in active
+                    {% endif %} " id="defence">
+                        <div class="panel-body">
+                            <form method="post">
+                                <input type='hidden' name='mode' value='defence' />
+                                <div class="table-responsive">
+                                    <table id="sd_history" class="table table-bordered table-hover" style="width:100%">
+                                        <thead>
+                                        <tr>
+                                            <th>S/N</th><th>Name</th><th>Matricno</th><th>Score</th><th>Date</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if widget and widget['dseminars'] %}
+                                            {% for seminar in widget['dseminars'] %}
+                                            <tr>
+                                                <td>
+                                                    <input type="hidden" name="data_ids[]" value="{{seminar.student.id}}">
+                                                    {{loop.index}}
+                                                </td>
+                                                <td>{{seminar.student.name}}</td>
+                                                <td>{{seminar.student.matricno}}</td>
+                                                <td>
+                                                    <input type="number" name="data_scores[]" max="40" class="form-control" value="{{seminar.student.pdefence}}" required>
+                                                </td>
+                                                <td>{{seminar.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                            </tr>
+                                            {%else%}
+                                            <tr>
+                                                <td colspan="100%">No record found</td>
+                                            </tr>
+                                            {% endfor %}
+                                            {% endif %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <br/>
+                                <div class="form-group">
+                                    <button class="btn btn-primary btn-block" type="submit">Submit Scores</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('.app-name').text("{{pageTitle}}");
+        $('.fa-power-off').hide();
+        $('.s_icon').html("<a href='{{url_for('dashboard')}}'><i class='fa fa-arrow-left' " +
+            "></i></a>");
+        $('#sd_history, #sw_history').DataTable();
+        $('#sd_history_wrapper, #sw_history_wrapper').addClass('table-responsive');
+    })
+</script>
+{% endblock %}

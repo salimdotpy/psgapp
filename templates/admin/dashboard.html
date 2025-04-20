@@ -1,0 +1,176 @@
+{% extends 'admin/layout.html' %}
+{% block style %}
+<style>
+    .modal:nth-of-type(even){z-index: 1051!important;}
+    .modal-backdrop.show:nth-of-type(even){z-index: 1052!important;}
+    .a-flex{
+        display: flex; justify-content: space-between; overflow-x: auto;
+    }
+    .a-flex>div, .a-flex>label{
+        flex-basis: 38%; flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <a href="{{url_for('adminLecturer')}}">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-user-secret fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Manage Lecturer <span class="label label-info">{{widget['lecturer']|count}}</span></b></h5>
+                            <p>View | Add | Update | Delete</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="{{url_for('adminStudent')}}">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-users fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Manage Student <span class="label label-info">{{widget['student']|count}}</span></b></h5>
+                            <p>View | Add | Update | Delete</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="{{url_for('adminAllocate')}}">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-link fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Allocate</b></h5>
+                            <p>Allocate Lecturer | Student</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="#editProfile" data-toggle="modal" data-backdrop="static">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-edit fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Update Profile</b></h5>
+                            <p>Edit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="#editPassword" data-toggle="modal" data-backdrop="static">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-edit fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Change Password</b></h5>
+                            <p>Edit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<div class="modal fade crud-modal-sm" id="editPassword" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <b>Change Password</b>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="form-group">
+                        <label class="required">Current Password</label>
+                        <input type="password" name="opass" class="form-control" placeholder="Enter Current Password" required="">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">New Password</label>
+                        <input type="password" name="npass" class="form-control" placeholder="Enter Current Password" required="">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Confirm Password</label>
+                        <input type="password" name="cpass" class="form-control" placeholder="Enter Password Again" required="">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary pull-right" name="editPassword" type="submit">Update</button>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editProfile" role="dialog">
+    <div class="modal-dialog" style="margin-top: 15%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <b>Update Profile</b>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <div class="form-group">
+                        <label class="required">Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="Enter your name" value="{{admin.name}}" required="">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Email Address</label>
+                        <input type="text" name="email" class="form-control" value="{{admin.email}}">
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Phone Number</label>
+                        <input type="number" name="contact" class="form-control" placeholder="Enter Phone Number" value="{{admin.mobile}}" required="">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary pull-right" name="editProfile" type="submit">Update</button>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('.app-name').text("{{pageTitle}}");
+        $('.fa-power-off').hide();
+        // $('#a_history').DataTable();
+        // $('#a_history_wrapper').addClass('table-responsive');
+    });
+</script>
+{% endblock %}
