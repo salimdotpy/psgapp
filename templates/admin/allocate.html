@@ -1,0 +1,368 @@
+{% extends 'admin/layout.html' %}
+{% block style %}
+<style>
+    .modal:nth-of-type(even){z-index: 1051!important;}
+    .modal-backdrop.show:nth-of-type(even){z-index: 1052!important;}
+    .a-flex{
+        display: flex; justify-content: space-between; overflow-x: auto;
+    }
+    .a-flex>div, .a-flex>label{
+        flex-basis: 38%; flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#all">Create</a></li>
+            <li><a data-toggle="tab" href="#project">Project</a></li>
+            <li><a data-toggle="tab" href="#seminar">Seminar</a></li>
+        </ul>
+        <div class="tab-content">
+            <div class="panel z-depth-1 tab-pane fade in active" id="all">
+                <div class="panel-body">
+                    <b>{{pageTitle}}</b>
+                    <hr>
+                    <form method="post" action="{{url_for('adminAllocate')}}">
+                        <input type='hidden' name='create' value='create' />
+                        <div class="form-group">
+                            <label class="required">Type</label>
+                            <select name='type' class="form-control" required>
+                                <option value=''>Select Type</option>
+                                <option value='project'>Project</option>
+                                <option value='seminar'>Seminar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Mode</label>
+                            <select name='mode' class="form-control" onchange="
+                            if(this.value == 'defence') $('#lect').attr('multiple', true);
+                            else $('#lect').attr('multiple', false);
+                            " required>
+                                <option value=''>Select Mode</option>
+                                <option value='defence'>Defence</option>
+                                <option value='writeup'>Writeup</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Lecturer</label>
+                            <select name='lecturer' id='lect' class="form-control" required>
+                                <option value=''>Select Lecturer</option>
+                                {% if widget and 'lecturers' in widget %}
+                                    {% for lecturer in widget['lecturers'] %}
+                                    <option value='{{lecturer.id}}'>{{lecturer.name}}</option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="required">Students</label>
+                            <div class="table-responsive">
+                                <table id="a_history" class="table table-bordered table-hover" style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th>S/N</th><th>Check</th><th>Student Info</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if widget and 'students' in widget %}
+                                        {% for student in widget['students'] %}
+                                        <tr>
+                                            <td>{{loop.index}}</td>
+                                            <td>
+                                                <input type="hidden" name="data_id[]" id='{{student.id}}' value="{{student.id}}">
+                                                <input type="checkbox" name="students[]" value="false" onchange="
+                                                if(this.checked) this.value = $('#{{student.id}}').val();
+                                                else this.value = false;
+                                                ">
+                                            </td>
+                                            <td>{{student.matricno}} ({{student.name}})</td>
+                                        </tr>
+                                        {% endfor %}
+                                        {%else%}
+                                        <tr>
+                                            <td colspan="100%">No record found</td>
+                                        </tr>
+                                        {% endif %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary btn-block" type="submit">Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="panel z-depth-1 tab-pane fade" id="project">
+                <div class="panel-body">
+                    <b>Allocated for Project</b>
+                    <hr>
+                    <div class="panel-group" id="accordp">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordp" href="#pwriteup">Write Up ({{widget['wprojects']|count}})</a>
+                                </h4>
+                            </div>
+                            <div id="pwriteup" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    <form method="post">
+                                    <input type='hidden' name='bulkdelete' value='bulkdelete' />
+                                    <div class="table-responsive">
+                                        <table id="pw_history" class="table table-bordered table-hover" style="width:100%">
+                                            <thead>
+                                            <tr>
+                                                <th>S/N</th><th>Lecturer Name</th><th>Student Info</th><th>Date</th><th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if widget and 'wprojects' in widget %}
+                                                {% for project in widget['wprojects'] %}
+                                                <tr>
+                                                    <td>{{loop.index}}</td>
+                                                    <td>{{project.lecturer.username}}</td>
+                                                    <td>{{project.student.name}} | ({{project.student.matricno}})</td>
+                                                    <td>{{project.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                                    <!--<td hidden='hidden'>-->
+                                                    <!--<form method="post">-->
+                                                    <!--    <input type='hidden' name='delete' value='delete' />-->
+                                                    <!--    <input type='hidden' name='by' value='student' />-->
+                                                    <!--    <input type='hidden' name='id' value='{{project.id}}' />-->
+                                                    <!--    <div class="form-group">-->
+                                                    <!--        <button class="btn btn-danger btn-sm" type="submit" title="Delete"><i class="fa fa-trash"></i></button>-->
+                                                    <!--    </div>-->
+                                                    <!--</form>-->
+                                                    <!--</td>-->
+                                                    <td>
+                                                        <input type="hidden" name="data_id[]" id='{{project.id}}' value="{{project.id}}">
+                                                        <input type="checkbox" name="projects[]" value="false" onchange="
+                                                        if(this.checked) this.value = $('#{{project.id}}').val();
+                                                        else this.value = false;
+                                                        ">
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                {%else%}
+                                                <tr>
+                                                    <td colspan="100%">No record found</td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-danger btn-block" type="submit">Delete</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordp" href="#pdefence">Defence ({{widget['dprojects']|count}})</a>
+                                </h4>
+                            </div>
+                            <div id="pdefence" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <form method="post">
+                                    <input type='hidden' name='bulkdelete' value='bulkdelete' />
+                                    <div class="table-responsive">
+                                        <table id="pd_history" class="table table-bordered table-hover" style="width:100%">
+                                            <thead>
+                                            <tr>
+                                                <th>S/N</th><th>Lecturer Name</th><th>Student Info</th><th>Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if widget and 'dprojects' in widget %}
+                                                {% for project in widget['dprojects'] %}
+                                                <tr>
+                                                    <td>{{loop.index}}</td>
+                                                    <td>{{project.lecturer.username}}</td>
+                                                    <td>{{project.student.name}} | ({{project.student.matricno}})</td>
+                                                    <td>{{project.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                                    <!--<td>-->
+                                                    <!--<form method="post">-->
+                                                    <!--    <input type='hidden' name='delete' value='delete' />-->
+                                                    <!--    <input type='hidden' name='by' value='student' />-->
+                                                    <!--    <input type='hidden' name='id' value='{{project.id}}' />-->
+                                                    <!--    <div class="form-group">-->
+                                                    <!--        <button class="btn btn-danger btn-sm" type="submit" title="Delete"><i class="fa fa-trash"></i></button>-->
+                                                    <!--    </div>-->
+                                                    <!--</form>-->
+                                                    <!--</td>-->
+                                                    <td>
+                                                        <input type="hidden" name="data_id[]" id='{{project.id}}' value="{{project.id}}">
+                                                        <input type="checkbox" name="projects[]" value="false" onchange="
+                                                        if(this.checked) this.value = $('#{{project.id}}').val();
+                                                        else this.value = false;
+                                                        ">
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                {%else%}
+                                                <tr>
+                                                    <td colspan="100%">No record found</td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-danger btn-block" type="submit">Delete</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="panel z-depth-1 tab-pane fade" id="seminar">
+                <div class="panel-body">
+                    <b>Allocated for Seminar</b>
+                    <hr>
+                    <div class="panel-group" id="accords">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accords" href="#swriteup">Write Up ({{widget['wseminars']|count}})</a>
+                                </h4>
+                            </div>
+                            <div id="swriteup" class="panel-collapse collapse in">
+                                <div class="panel-body">
+                                    <form method="post">
+                                    <input type='hidden' name='bulkdelete' value='bulkdelete' />
+                                    <div class="table-responsive">
+                                        <table id="sw_history" class="table table-bordered table-hover" style="width:100%">
+                                            <thead>
+                                            <tr>
+                                                <th>S/N</th><th>Lecturer Name</th><th>Student Info</th><th>Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if widget and 'wseminars' in widget %}
+                                                {% for seminar in widget['wseminars'] %}
+                                                <tr>
+                                                    <td>{{loop.index}}</td>
+                                                    <td>{{seminar.lecturer.username}}</td>
+                                                    <td>{{seminar.student.name}} | ({{seminar.student.matricno}})</td>
+                                                    <td>{{seminar.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                                    <!--<td>-->
+                                                    <!--<form method="post">-->
+                                                    <!--    <input type='hidden' name='delete' value='delete' />-->
+                                                    <!--    <input type='hidden' name='by' value='student' />-->
+                                                    <!--    <input type='hidden' name='id' value='{{seminar.id}}' />-->
+                                                    <!--    <div class="form-group">-->
+                                                    <!--        <button class="btn btn-danger btn-sm" type="submit" title="Delete"><i class="fa fa-trash"></i></button>-->
+                                                    <!--    </div>-->
+                                                    <!--</form>-->
+                                                    <!--</td>-->
+                                                    <td>
+                                                        <input type="hidden" name="data_id[]" id='{{seminar.id}}' value="{{seminar.id}}">
+                                                        <input type="checkbox" name="projects[]" value="false" onchange="
+                                                        if(this.checked) this.value = $('#{{seminar.id}}').val();
+                                                        else this.value = false;
+                                                        ">
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                {%else%}
+                                                <tr>
+                                                    <td colspan="100%">No record found</td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-danger btn-block" type="submit">Delete</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accords" href="#sdefence">Defence ({{widget['dseminars']|count}})</a>
+                                </h4>
+                            </div>
+                            <div id="sdefence" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <form method="post">
+                                    <input type='hidden' name='bulkdelete' value='bulkdelete' />
+                                    <div class="table-responsive">
+                                        <table id="sd_history" class="table table-bordered table-hover" style="width:100%">
+                                            <thead>
+                                            <tr>
+                                                <th>S/N</th><th>Lecturer Name</th><th>Student Info</th><th>Date</th>
+                                                <th>Action</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% if widget and 'dseminars' in widget %}
+                                                {% for seminar in widget['dseminars'] %}
+                                                <tr>
+                                                    <td>{{loop.index}}</td>
+                                                    <td>{{seminar.lecturer.username}}</td>
+                                                    <td>{{seminar.student.name}} | ({{seminar.student.matricno}})</td>
+                                                    <td>{{seminar.created_at.strftime("%a, %d %b %Y at %H:%M")}}</td>
+                                                    <!--<td>-->
+                                                    <!--<form method="post">-->
+                                                    <!--    <input type='hidden' name='delete' value='delete' />-->
+                                                    <!--    <input type='hidden' name='by' value='student' />-->
+                                                    <!--    <input type='hidden' name='id' value='{{seminar.id}}' />-->
+                                                    <!--    <div class="form-group">-->
+                                                    <!--        <button class="btn btn-danger btn-sm" type="submit" title="Delete"><i class="fa fa-trash"></i></button>-->
+                                                    <!--    </div>-->
+                                                    <!--</form>-->
+                                                    <!--</td>-->
+                                                    <td>
+                                                        <input type="hidden" name="data_id[]" id='{{seminar.id}}' value="{{seminar.id}}">
+                                                        <input type="checkbox" name="projects[]" value="false" onchange="
+                                                        if(this.checked) this.value = $('#{{seminar.id}}').val();
+                                                        else this.value = false;
+                                                        ">
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                                {%else%}
+                                                <tr>
+                                                    <td colspan="100%">No record found</td>
+                                                </tr>
+                                                {% endif %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-danger btn-block" type="submit">Delete</button>
+                                    </div>
+                                </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<script>
+    $(document).ready(function () {
+        $('.app-name').text("{{pageTitle}}");
+        $('.fa-power-off').hide();
+        $('.s_icon').html("<a href='{{url_for('adminDashboard')}}'><i class='fa fa-arrow-left' " +
+            "></i></a>");
+        $('#a_history, #pd_history, #pw_history, #sd_history, #sw_history').DataTable();
+        $('#a_history_wrapper, #pd_history_wrapper, #pw_history_wrapper, #sd_history_wrapper, #sw_history_wrapper').addClass('table-responsive');
+    })
+</script>
+{% endblock %}

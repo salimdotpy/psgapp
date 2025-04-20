@@ -1,0 +1,147 @@
+{% extends 'layout.html' %}
+{% block style %}
+<style>
+    .modal:nth-of-type(even){z-index: 1051!important;}
+    .modal-backdrop.show:nth-of-type(even){z-index: 1052!important;}
+    .a-flex{
+        display: flex; justify-content: space-between; overflow-x: auto;
+    }
+    .a-flex>div, .a-flex>label{
+        flex-basis: 38%; flex-shrink: 0;
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="alert alert-info">
+            <strong>Welcome</strong>
+            {{lecturer.name}}
+        </div>
+    </div>
+    {% if widget['dprojects'] or widget['wprojects'] %}
+    <div class="col-md-6">
+        <a href="{{url_for('project')}}">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-user-secret fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Project Mark</b></h5>
+                            <p>
+                                <span class="label label-info">{{widget['dprojects']|count}}</span> Defence student(s) and
+                                <span class="label label-info">{{widget['wprojects']|count}}</span> Writeup student(s)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+    {% if widget['dseminars'] or widget['wseminars'] %}
+    <div class="col-md-6">
+        <a href="{{url_for('seminar')}}">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-users fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Seminar Mark</b></h5>
+                            <p>
+                                <span class="label label-info">{{widget['dseminars']|count}}</span> Defence student(s) and
+                                <span class="label label-info">{{widget['wseminars']|count}}</span> Writeup student(s)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endif %}
+    <div class="col-md-6">
+        <a href="#editPassword" data-toggle="modal" data-backdrop="static">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-edit fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Update Password</b></h5>
+                            <p>Edit</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-md-6">
+        <a href="{{url_for('logout')}}">
+            <div class="panel z-depth-1">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-sign-out fa-4x" style="color: #55d6d6"></i>
+                        </div>
+                        <div class="col-xs-9">
+                            <h5><b>Logout</b></h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}
+{% block script %}
+<div class="modal fade crud-modal-sm" id="editPassword" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <b>Change Password</b>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="">
+                    <div class="form-group">
+                        <label class="required">Name</label>
+                        <input type="text" class="form-control" placeholder="Enter your name" value="{{lecturer.name}}" disabled required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Current Password</label>
+                        <input type="password" name="opass" class="form-control" placeholder="Enter Current Password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">New Password</label>
+                        <input type="password" name="npass" class="form-control" placeholder="Enter Current Password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Confirm Password</label>
+                        <input type="password" name="cpass" class="form-control" placeholder="Enter Password Again" required>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary pull-right" name="editCitizenPassword" type="submit">Update</button>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.app-name').text("{{pageTitle}}");
+        $('.fa-power-off').hide();
+        // $('#a_history').DataTable();
+        // $('#a_history_wrapper').addClass('table-responsive');
+    });
+</script>
+{% endblock %}

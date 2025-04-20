@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6"><a href="#adminLogin" data-toggle="modal">
+        <div class="panel z-depth-1">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-user-secret fa-4x" style="color: #55d6d6"></i>
+                    </div>
+                    <div class="col-xs-9">
+                        <h5><b>Login</b></h5>
+                        <p>Admin login here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+    </div>
+    <div class="col-md-6"><a href="#login" data-toggle="modal">
+        <div class="panel z-depth-1">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-sign-in fa-4x" style="color: #55d6d6"></i>
+                    </div>
+                    <div class="col-xs-9">
+                        <h5><b>Login</b></h5>
+                        <p>Lecturer login here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </a>
+    </div>
+    <div class="col-md-6 hidden">
+        <div class="panel z-depth-1 about">
+            <div class="panel-body">
+                <b>About Us</b>
+                <hr>
+                <p class="text-center" id="about">
+                    <b>The sdfsdf</b><br><br>
+                    Design and Developed by
+                    <a href="#studentListModal" data-toggle="modal"><b class="badge ">HNDII 2023/2024</b></a>
+                    Set and Supervised by
+                    <b>Engr. Abdulwakil Adekunle Kasali.</b> All rights reserved.
+                    For Enquiry, call <a href="tel:+2347030337708">+2347030337708</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="adminLogin" role="dialog">
+    <div class="modal-dialog" style="margin-top: 15%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <b>Admin Login Page</b>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{url_for('adminLogin')}}">
+                    <div class="form-group">
+                        <label class="required">Username</label>
+                        <input type="text" name="username" class="form-control" placeholder="Enter your username" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="Enter your Password" required>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary pull-right" type="submit">Login</button>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="login" role="dialog">
+    <div class="modal-dialog" style="margin-top: 15%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <button type="button" class="close" data-dismiss="modal">×</button>
+                    <b>Welcome back, Our Lecturer!</b>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{url_for('login')}}">
+                    <div class="form-group">
+                        <label class="required">Surname</label>
+                        <input type="text" name="name" class="form-control" placeholder="Enter your Surname" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Password</label>
+                        <input type="password" name="password" class="form-control" placeholder="Enter your Password" required>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary pull-right" type="submit">Login</button>
+                        <button class="btn btn-danger" data-dismiss="modal">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
